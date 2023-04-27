@@ -1,0 +1,188 @@
+{% extends "configdash/base.html" %}
+{% load utils %}
+{% block title %}
+  <title> Config Dashboard </title> 
+  {% endblock %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="row justify-content-md">
+            <div class="col-md-3 gy-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Modules</h5>
+                        <div class="card-text">
+                            <table class="table">
+                                <form id="moduleForm" method="POST" action="{% url 'configdashboard:add_module' %}">
+                                    {% csrf_token %}
+                                    <tr>
+                                        <td>
+                                            {{moduleForm.modules}}
+                                        </td>
+                                        <td>
+                                            <button type="submit" class="btn btn-primary"> Add Module</button>
+                                        </td>
+                                    </tr>            
+                                </form>
+                            </table>
+                            
+                            <table class="table table-bordered">
+                                <thead>
+                                        <th>Name</th>
+                                        <th>Actions</th>
+                                </thead>
+                                <tbody>
+                                    {% for module in config.modules %}
+                                    <tr>
+                                        <td>{{module}}</td>
+                                        <td>
+                                            <form name method="POST" action="{% url 'configdashboard:remove_module' module  %}">
+                                                {% csrf_token %}
+                                                <input type="submit" value="Remove" class="btn btn-danger"/>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 gy-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Network Options</h5>
+                        <div class="card-text">
+                            <table class="table">
+                                <form id="networkForm" method="POST" action="{% url 'configdashboard:add_network' %}">
+                                    {% csrf_token %}
+                                    <tr>
+                                        <td>
+                                            {{networkForm.networks}}
+                                        </td>
+                                        <td>
+                                            <button type="submit" class="btn btn-primary"> Add Network</button>
+                                        </td>
+                                    </tr>            
+                                </form>
+                            </table>
+                            <table class="table table-bordered">
+                                <thead>
+                                        <th>Display Name</th>
+                                        <th>Name</th>
+                                        <th>Actions</th>
+                                </thead>
+                                <tbody>
+                                    {% for net,net_disp in config.settings.networks|zip:config.settings.networks_display%}
+                                    <tr>
+                                        <td>{{net_disp}}</td>
+                                        <td>{{net}}</td>
+                                        <td>
+                                            <form name method="POST" action="{% url 'configdashboard:remove_network' net  %}">
+                                                {% csrf_token %}
+                                                <input type="submit" value="Remove" class="btn btn-danger"/>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 gy-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Gender</h5>
+                        <div class="card-text">
+                            <table class="table">
+                                <tbody>
+                                    <form method="POST" action="{% url 'configdashboard:add_gender' %}">
+                                        {% csrf_token %}
+                                        <tr>
+                                            <td>
+                                                {{genderForm.gender}}
+                                            </td>
+                                            <td>
+                                                <input type="submit" value="Add" class="btn btn-success"> 
+                                            </td>
+                                        </tr>
+                                    </form>
+                                </tbody>
+                            </table>
+                            <table class="table table-bordered">
+                                {% for g in config.settings.gender_keys %}
+                                <tr>
+                                    <td>
+                                        {{g}}
+                                    </td>
+                                    <td>
+                                        <form name method="POST" action="{% url 'configdashboard:remove_gender' g  %}">
+                                            {% csrf_token %}
+                                            <input type="submit" value="Remove" class="btn btn-danger"/>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 gy-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Who Modules</h5>
+                        <div class="card-text">
+                            <ul class="list-group">
+                                {% for who in config.settings.who_modules %}
+                                <li class="list-group-item">{{ who.display_name }}
+                                    <input type="checkbox" type="checkbox" id="{{who.name}}" 
+                                    {% if who.enabled == 1 %} checked {% endif %}
+                                    onchange="toggle_module('who','{{who.name}}')">
+                                    <i class="fa fa-spinner" style="display:none" aria-hidden="true" id="{{who.name}}-process"></i>
+                                    <i class="fa fa-exclamation-circle" style="display:none" aria-hidden="true" id="{{who.name}}-error"></i>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        function toggle_module(moduleType,moduleName){
+            var pre_val = !$("#" + moduleName).is(':checked')
+            $("#" + moduleName).prop('checked',pre_val)
+            $("#" + moduleName).attr('disabled',true)
+            $("#" + moduleName +"-process").css({'display':'inline'})
+            $("#" + moduleName + "-error").css({'display':'none'})
+            $.ajax({
+                url:"/configdashboard/toggle_module/" + moduleType + "/" + moduleName,
+                success:function(data,status){
+                    if(data['status'] != -1){
+                        $("#" + moduleName).prop('checked', data.value == 1 ? true:false)
+                        $("#" + moduleName).removeAttr('disabled')
+                        $("#" + moduleName +"-process").css({'display':'none'})
+                    }else{
+                        onToggleError()
+                    }
+                    
+                },
+                error:function(error){
+                    onToggleError()
+                }
+            })
+            
+            function onToggleError(){
+                $("#" + moduleName).removeAttr('disabled')
+                $("#" + moduleName).prop('checked', pre_val)
+                $("#" + moduleName + "-process").css({'display':'none'})
+                $("#" + moduleName + "-error").css({'display':'inline'})
+            }
+        }
+    </script>
+{% endblock %}

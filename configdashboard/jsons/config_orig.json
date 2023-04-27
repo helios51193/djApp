@@ -1,0 +1,246 @@
+{
+    "modules": [
+      "hubs",
+      "pulse_takers",
+      "gate_keepers",
+      "power_players",
+      "influencers",
+      "collab_overload",
+      "discon_emp",
+      "silos"
+    ],
+  
+    "child_class": [
+      "hierarchy_level",
+      "department",
+      "location",
+      "group_name1"
+    ],
+    "child_class_disp": [
+      "Hierarchy Level",
+      "Department",
+      "Location",
+      "Broad Location"
+    ],
+    "child_class_short": [
+      "hl",
+      "dept",
+      "loc",
+      "bloc"
+    ],
+    "child_class_short_disp": [
+      "HL",
+      "Dept",
+      "Loc",
+      "Bloc"
+    ],
+    "entity_class": [
+      "hierarchy_level",
+      "department",
+      "location",
+      "group_name1"
+    ],
+    "entity_class_child": {
+      "department": [
+        "hierarchy_level",
+        "location",
+        "group_name1"
+      ],
+      "group_name1": [
+        "hierarchy_level",
+        "department",
+        "location"
+      ],
+      "hierarchy_level": [
+        "department",
+        "location",
+        "group_name1"
+      ],
+      "location": [
+        "hierarchy_level",
+        "department",
+        "group_name1"
+      ]
+    },
+    "entity_class_disp": [
+      "Hierarchy Level",
+      "Department",
+      "Location",
+      "Broad Location"
+    ],
+    "entity_class_short": [
+      "hl",
+      "dept",
+      "loc",
+      "bloc"
+    ],
+    "entity_class_short_disp": [
+      "HL",
+      "Dept",
+      "Loc",
+      "Bloc"
+    ],
+    "parent_entity_class_child": {
+      "department": [
+        "department"
+      ],
+      "group_name1": [
+        "group_name1"
+      ],
+      "hierarchy_level": [
+        "hierarchy_level"
+      ],
+      "location": [
+        "location"
+      ]
+    },
+  
+    "settings": {
+      "URL": "http://localhost/orglens/public/study_report/223",
+      "display_name": "Prashanth Client",
+      "extended_gender_calcs": false,
+      "gender_keys": [
+        "Male",
+        "Female"
+      ],
+      "hl_count": "1",
+      "hl_order": "ASC",
+      "is_generate_observation": true,
+      "is_generate_onps": true,
+      "is_generate_report": true,
+      "is_parent": true,
+
+  "who_modules": [
+        {
+          "display_name": "Disconnected Employees",
+          "name": "v3_disc_emp",
+          "enabled": 1,
+          "networks":[
+            {"name":"main_combined", "display_name":"Combined"},
+            {"name":"work", "display_name":"Work"},
+            {"name":"innovation", "display_name":"Innovation"},
+            {"name":"expertise", "display_name":"Expertise"},
+            {"name":"trust", "display_name":"Trust"},
+            {"name":"energy", "display_name":"Energy"}
+          ]      
+        },
+        {
+          "display_name": "Silos",
+          "name": "v3_silo",
+          "enabled": 1,
+          "networks":[
+            {"name":"main_combined", "display_name":"Combined"},
+            {"name":"work", "display_name":"Work"},
+            {"name":"innovation", "display_name":"Innovation"},
+            {"name":"expertise", "display_name":"Expertise"},
+            {"name":"trust", "display_name":"Trust"},
+            {"name":"energy", "display_name":"Energy"}
+          ]      
+        },
+        {
+          "display_name": "Influencers",
+          "name": "v3_influencer",
+          "enabled": 1,
+          "networks":[{"name":"main_combined", "display_name":"Combined"}]
+        },
+  
+        {
+          "display_name": "Collaboration Overload",
+          "name": "v3_collab_overload",
+          "enabled": 1,
+          "networks":[
+            {"name":"main_professional", "display_name":"Main Professional"},
+            {"name":"work", "display_name":"Work"},
+            {"name":"innovation", "display_name":"Innovation"},
+            {"name":"expertise", "display_name":"Expertise"}
+          ]
+        },
+        {
+          "display_name": "Hubs",
+          "name": "v3_hub",
+          "enabled": 1,
+          "networks":[
+            {"name":"main_combined", "display_name":"Combined"},
+            {"name":"work", "display_name":"Work"},
+            {"name":"innovation", "display_name":"Innovation"},
+            {"name":"expertise", "display_name":"Expertise"},
+            {"name":"trust", "display_name":"Trust"},
+            {"name":"energy", "display_name":"Energy"}
+          ]
+        },
+        {
+          "display_name": "Gate Keepers",
+          "name": "v3_gate_keeper",
+          "enabled": 1,
+          "networks":[
+            {"name":"main_combined", "display_name":"Combined"},
+            {"name":"work", "display_name":"Work"},
+            {"name":"innovation", "display_name":"Innovation"},
+            {"name":"expertise", "display_name":"Expertise"},
+            {"name":"trust", "display_name":"Trust"},
+            {"name":"energy", "display_name":"Energy"}
+          ]
+        },
+        {
+          "display_name": "Power Players",
+          "name": "v3_power_player",
+          "enabled": 1,
+          "networks":[
+            {"name":"main_combined", "display_name":"Combined"},
+            {"name":"work", "display_name":"Work"},
+            {"name":"innovation", "display_name":"Innovation"},
+            {"name":"expertise", "display_name":"Expertise"},
+            {"name":"trust", "display_name":"Trust"},
+            {"name":"energy", "display_name":"Energy"}
+          ]
+        },
+        {
+          "display_name": "Pulse Takers",
+          "name": "v3_pulse_taker",
+          "enabled": 1,
+          "networks":[
+            {"name":"main_combined", "display_name":"Combined"},
+            {"name":"work", "display_name":"Work"},
+            {"name":"innovation", "display_name":"Innovation"},
+            {"name":"expertise", "display_name":"Expertise"},
+            {"name":"trust", "display_name":"Trust"},
+            {"name":"energy", "display_name":"Energy"}
+          ]
+        }
+      ],
+  
+      "loglevel": "info",
+      "networks": [
+        "combined",
+        "work",
+        "trust",
+        "energy",
+        "decision-making",
+        "expertise",
+        "awareness",
+        "innovation"
+      ],
+      "networks_display": [
+        "Combined",
+        "Work",
+        "Trust",
+        "Energy",
+        "Decision Making",
+        "Expertise",
+        "Awareness",
+        "Innovation"
+      ],
+      "org_name": "Prashanth Client",
+      "parent": "org",
+      "parent_class": "Organisation",
+      "product_name": "main_report",
+      "remove_defaulters": false,
+      "study_id": "223",
+      "survey_end_date": "2022-10-13",
+      "team_name": "Team Name",
+      "tenure_text": "6 months",
+      "tenurecalc_date": "2021-10-21"
+    },
+    "ver": "1.0"
+  }
+  
