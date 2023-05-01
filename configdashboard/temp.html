@@ -1,0 +1,404 @@
+<script>
+    function show_hide_row_config()
+    {
+        console.log("hi",$("#menu-arrows-left-config").css("display"));
+        console.log("hi2",$("#menu-arrows-right-config").css("display"));
+        $("#menu-arrows-left-config").toggle();
+        $("#menu-arrows-right-config").toggle();
+        $("#downloadJSON").toggle()
+    }
+    function toggle_client_config()
+    {
+        console.log("hi",$("#arrows-left-client-config").css("display"));
+        console.log("hi2",$("#arrows-right-client-config").css("display"));
+        $("#arrows-left-client-config").toggle();
+        $("#arrows-right-client-config").toggle();
+        $("#client-config").toggle()
+    }
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<div class="row mb-3">
+<div class="col-md-11" style="justify-content:center;margin:auto">
+<form class="form-control mt-4" id='report_form'>
+    {% csrf_token %}
+
+    <div class="row mt-4 mb-3">
+        <div class="col-md-12">
+    <div id='indicator' class='text-center' style="color:white;font-size:15px">
+        {% if submitted and saved %}
+         <div class="row" style="background-color:green">
+            <h4 style="color:white;margin-top:6px">Configuration has been submitted and saved.</h4>
+        {% elif submitted and not saved %}
+            <h4 style="color:white;margin-top:6px">Configuration has been submitted but not saved</h4>
+            </div>
+        {% elif msg != 'safe' %}
+             <div class="row" style="background-color:#FF0000">
+                <div class="container">
+            <p style="color:white;font-size:15px;margin-top:6px">{{ msg }}</p>
+        </div>
+             </div>
+        {% endif %}
+    </div>
+            </div>
+    </div>
+<br>
+<div class="row">
+    <div class="col-md-11 mb-2" style="align-items: right;padding: 0px; margin: auto;">
+    <div class="btn btn-sm btn-gray-800  align-items-center mb-2" style="font-size: 13px; float: right;justify-content:center;color:white">
+        <a title="Help" href="{% url  'helpconfig'  %}" target="_blank" style="color:white">
+            <i class="fas fa-info-circle"></i>&nbsp;Help
+        </a>
+    </div>
+    </div>
+    </div>
+    <div class="row">
+        <div class="col-md-10" style="margin:auto">
+            <div class="card">
+                <div class="row" style="justify-content:center">
+                    <div class="col-md-5 mt-4">
+                        <div class="card-body">
+                            <div>
+                                <label >Hierarchy Level</label>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="hl_asc" {{ asc }} value="ASC" name="hl_order" class="custom-control-input">
+                                    <label class="custom-control-label" for="hl_asc">Ascending</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="hl_dsc" {{ dsc }} value="DSC" name="hl_order" class="custom-control-input">
+                                    <label class="custom-control-label" for="hl_dsc">Descending</label>
+                                </div>
+                                <label style="margin-top:5px;">Leader Level</label>
+                                <input class="form-control inputBox" type="text" name="leader_level" value='{{ hl_count }}' required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5 mt-4">
+                        <div class="card-body">
+                            <label for="id_tenure_date">Tenure Calculation Date<span style="color:red">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <svg class="icon icon-xs text-gray-600" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd">
+                                        </path>
+                                    </svg>
+                                </span>
+                                <input type="date" id="tenure_date" name="tenure_date" value='{{ tenure_date }}' class="form-control" required>
+                            </div>
+                            <div class="mt-2">
+                                <label style="margin-top:5px;">Tenure Text</label>
+                                <input class="form-control inputBox" type="text" name="tenure_text" value="{{ tenure_text }}" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-10" style="margin:auto">
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row" style="justify-content:center">
+                            <div class="col-md-9 mt-2">
+                                <label>Organisation Full Name</label>
+                                <input class="form-control inputBox" type="text" name="org_name" value='{{ org_name }}' required>
+                            </div>
+                            <div class="col-md-9 mt-2">
+                                <label>Display Name</label>
+                                <input class="form-control inputBox" type="text" name="display_name" value='{{ display_name }}' required>
+                            </div>
+                            {% if team_ONA %}
+                            <div class="col-md-9 mt-2">
+                                <label>Team Name</label>
+                                <input class="form-control inputBox" type="text" name="team_name" value='{{ team_name }}' required>
+                            </div>
+                            {% endif %}
+                            <div class="col-md-9 mt-2">
+                                <input type="checkbox" id="extended_gender" name="extended_gender" value='Use_ext_gen' {{ ext_gen }}>&nbsp;&nbsp;
+                                <label for="extended_gender">Use Extended Gender?</label><br>
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+        </div>
+    </div>
+
+    <div hx-get="{% url 'report_jsonpart2' study_id %}" hx-trigger="load" id="part2form">
+
+                
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+                <span class="sr-only">Loading...</span>
+
+            </div>
+        </div>
+    </div>
+
+</form>
+
+</div>
+</div>
+
+{% if request.user.role == 'Orglens Admin' or request.user.role == 'Orglens Manager' or request.user.role == 'Partner Admin' or request.user.role == 'Partner Manager'  or request.user.role == 'Partner Analyst' %}
+
+<div class="row mb-3" >
+    <div class="col-md-11"style="margin:auto;" >
+        <div class="row" style="margin: auto;">
+        <div class="card">
+            <button type="button" class="collapsible" onclick="toggle_client_config()">
+                <p style="font-size: 18px; font-weight:600 ; margin: 0px;">
+                    <span class="detail">
+                    <i class="fa-solid fa-gear" style="font-size: 17px;"></i>
+                    &nbsp;&nbsp;Client Configuration
+                    <span>
+                        <i style="font-size: 13px;" class="far fa-question-circle"></i>&nbsp;
+                        <span class="tooltiptext">
+                            Here you can change permission action for client. please don't select checkbox if you want to disallow that for client.
+                        </span>
+                    </span>
+</span>
+                    <span id="arrows-left-client-config" class='fas fa-chevron-circle-down' aria-hidden="true" style="float:right; margin-top:5px;"  ></span>
+                    <span id="arrows-right-client-config" class='fas fa-chevron-circle-up' style="display: none; float:right; margin-top:5px;" aria-hidden="true "></span>
+                </p>
+            </button>
+            <div class="row mt-1 mb-1" id="client-config" style="display:none">
+                <div class="row">
+                <div class="col-md-10" style="margin: auto;">
+                    <div class="card" >
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <p><b style="color: #483D97;">Please select the permissible actions for Client:</b></p>
+                                </div>                                
+                                <div class="col-md-12" id="client-permissions" style="display:flex;flex-wrap: wrap;">
+                                    
+                                </div>
+                            </div>
+                            <div class="row mt-4" style="display:flex; justify-content:right;">
+                                <div class="spinner-border" id="cp-spinner">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <div id="updateOtherCP" class="btn btn-sm btn-gray-800  align-items-center mb-3" style="display:flex;font-size: 20px; float: left; margin-left: 10px;height:35px;font-size:13px;justify-content:center;width:20rem;color: white; ">
+                                    <a title="Update Other Permissions" href="{% url 'update_study' study_id %}">
+                                    <span style="color: white">Update Other Permissions</span>
+                                    </a>
+                                </div>
+                                <div id="updateCP" class="btn btn-sm btn-gray-800  align-items-center mb-3" style="display:flex; justify-content: flex-end; align-self:end;font-size: 20px; float: right; margin-right: 10px;height:35px;font-size:13px;justify-content:center;width:9rem;color: white; ">
+                                    <a title="Update">
+                                    <span>Update</span>
+                                    </a>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-10" style="margin: auto;">
+                    <div id="refreshCP" class="btn btn-sm btn-gray-800  align-items-center mb-3" style="display:flex; justify-content: flex-end; align-self:end;font-size: 20px; float: right; margin-right: 10px;height:35px;font-size:13px;justify-content:center;width:4rem;color: white; ">
+                        <a title="Refresh">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        </a>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+        </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-3" >
+    <div class="col-md-11"style="margin:auto;" >
+        <div class="row" style="margin: auto;">
+        <div class="card">
+            <button type="button" class="collapsible" onclick="show_hide_row_config()">
+                <p style="font-size: 18px; font-weight:600 ; margin: 0px;">
+                    <i class="fa-solid fa-gear" style="font-size: 15px;"></i>
+                    &nbsp;&nbsp;Advanced
+                    <span id="menu-arrows-left-config" class='fas fa-chevron-circle-down' aria-hidden="true" style="float:right; margin-top:5px;"  ></span>
+                    <span id="menu-arrows-right-config" class='fas fa-chevron-circle-up' style="display: none; float:right; margin-top:5px;" aria-hidden="true "></span>
+                </p>
+            </button>
+            <div class="row mt-1 mb-4" id="downloadJSON" style="display:none">
+                <div class="col-md-10" style="margin: auto;">
+                    <div class="card" >
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mt-1 mb-1" style="justify-content: center; display:flex;">
+                                    <a href="{% url 'download_config_json' study_id 'study' %}" target="_blank"
+                                        class="btn btn-sm btn-gray-800 d-inline-flex align-items-center"
+                                        style="height:37px;font-size:13px;width:18rem;justify-content:center">
+                                        &nbsp;<i class="fas fa-file-download"></i>&nbsp;&nbsp;Download Study Config JSON
+                                    </a>
+                                </div>
+                                <div class="col-md-6 mt-1 mb-1" style="justify-content: center; display:flex;">
+                                    <a href="{% url 'download_config_json' study_id 'report' %}" target="_blank"
+                                        class="btn btn-sm btn-gray-800 d-inline-flex align-items-center"
+                                        style="height:37px;font-size:13px;width:18rem;justify-content:center">
+                                        &nbsp;<i class="fas fa-file-download"></i>&nbsp;&nbsp;Download Report Config JSON
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+    $('#report_form').submit(function(e){
+        console.log('Submit clicked');
+        e.preventDefault();
+        indicator_html = '<div class="text-center"> \
+            <div class="spinner-border" > \
+                <span class="sr-only">Loading...</span> \
+            </div> \
+            </div>'
+        $('#indicator').html(indicator_html)
+        htmlText='';
+        var formData = new FormData(this);
+        var table = document.getElementById('fieldsTable');
+        var firstCells = table.querySelectorAll('td:nth-child(1)');
+        var secondCells = table.querySelectorAll('td:nth-child(2)');
+        var thirdCells = table.querySelectorAll('td:nth-child(3)');
+        var firstcellValues = [];
+        var entityvalues = [];
+        myObj = JSON.parse(("{{myObj |escapejs}}"));
+        firstCells.forEach(function(singleCell) {
+        firstcellValues.push(singleCell.innerText);
+        entity_value = singleCell.getAttribute("value");
+        entityvalues.push(entity_value);
+        console.log("singlecell",singleCell)
+
+        });
+
+        console.log("entityvalues",entityvalues)
+
+        console.log("firstcellvalues",firstcellValues);
+
+        var secondcellValues = [];
+        secondCells.forEach(function(singleCell) {
+        secondcellValues.push(singleCell.innerText);
+        });
+        console.log(secondcellValues);
+        var thirdcellValues = [];
+        thirdCells.forEach(function(singleCell) {
+        thirdcellValues.push(singleCell.innerText);
+        });
+        console.log(thirdcellValues);
+        formData.append('submitted', 'submitted');
+        formData.append('entityvalues', entityvalues);
+        formData.append('fields', firstcellValues);
+        formData.append('display_name_table', secondcellValues);
+        formData.append('short_display_name', thirdcellValues);
+        $.ajax(
+            {
+                url: "{% url 'report_jsonpart1' study_id %}",
+                type: 'POST',
+                data: formData,            
+                processData: false,
+                contentType: false,
+                success: function( result ) {
+                    console.log('Loading document');
+                    // console.log(result);
+                    // console.log('Ext gen:', ext_gen);
+                    $('#report_config').html(result);
+                    $.ajax({
+                        url: "{% url 'report_jsonpart2' study_id %}",
+                        type: 'POST',
+                        data: formData,            
+                        processData: false,
+                        contentType: false,
+                        success: function( result ) {
+                            console.log('Loading document');
+                            // console.log(result);
+                            // console.log('Ext gen:', ext_gen);
+                            $('#part2form').html(result);
+                        }
+                    });
+                }            
+            });
+            location.reload();
+        })
+</script>
+<script>
+    var clientPermissions = {};
+    function getClientPermissions(){
+        $('#refreshCP').hide();
+        $('#updateCP').hide();
+        $('#updateOtherCP').hide();
+        $('#cp-spinner').show();
+        $.get(url="{% url 'client_permissions' study_id %}", success= (response) => {
+            // console.log('Recieved response:', response);
+            if(response.success){
+                clientPermissions = response.data;
+                console.log('Client Permissions:', clientPermissions);
+                var checkBoxHtml = ''
+                for (const [key, value] of Object.entries(clientPermissions)){
+                    // var display = key.replace('_', ' '); //.toUpperCase();
+                    console.log('key:', key, 'val:', value);
+                    if (value === true | value === false){ // this is just a temporary fix for client_permission section. Need a permanent work here...
+                        console.log('Valid key:', key);
+                    
+                        var displayParts = key.split('_');
+                        let display = '';
+                        displayParts.forEach((part) => {
+                            display += part.charAt(0).toUpperCase() + part.slice(1) + ' ';
+                        });
+                        checkBoxHtml += `<div><input class="cpClass" type="checkbox" id="${key}" ${(value === true) ? "checked" : ""} />
+                            &nbsp;&nbsp;&nbsp;<label for="${key}">${display}</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>`;
+                    }
+                }
+                $('#client-permissions').html(checkBoxHtml);
+            }
+            $('#cp-spinner').hide();
+            $('#refreshCP').show();
+            $('#updateCP').show();
+            $('#updateOtherCP').show();
+            
+        }, 'json');
+    }
+    function updateClientPermissions(){
+        $('#refreshCP').hide();
+        $('#updateCP').hide();
+        $('#updateOtherCP').hide();
+        $('#cp-spinner').show();
+        console.log('Update button pressed');
+        var sendData = {csrfmiddlewaretoken: '{{ csrf_token }}'};
+        document.querySelectorAll('.cpClass').forEach(function(ip){
+            console.log(ip.id);
+            var isChecked = $('#'+ip.id).prop('checked');
+            console.log($('#'+ip.id).prop('checked'));
+            sendData[ip.id] = isChecked;
+        });
+        console.log('Send Data:', sendData);
+        // $.post(url='', data=)
+        $.post(url="{% url 'client_permissions' study_id %}", data=sendData, success= (response) => {
+            console.log('Recieved response:', response);
+            if(response.success){
+                console.log('Updated');                
+            }
+            else console.log('Failed');
+            $('#cp-spinner').hide();
+            $('#refreshCP').show();
+            $('#updateCP').show();
+            $('#updateOtherCP').show();
+        }, 'json');
+    }
+    $(document).ready(function () {
+        console.log('Document loaded...');
+        var ext_gen = '{{ ext_gen | safe }}';
+        console.log('Ext Gen', ext_gen);
+        getClientPermissions();
+        $('#refreshCP').on('click', getClientPermissions);
+        $('#updateCP').on('click', updateClientPermissions);
+    })
+</script>

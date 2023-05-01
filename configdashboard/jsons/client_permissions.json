@@ -1,0 +1,1 @@
+{"upload_data": true, "start_survey": false, "notifications": {"client_contact": [], "partner_contact": []}, "send_reminders": false, "start_analysis": false, "allowed_mail_types": [], "max_reminders_per_day": 0, "allowed_mail_providers": ["elastic_mail"]}

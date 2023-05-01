@@ -4,185 +4,711 @@
   <title> Config Dashboard </title> 
   {% endblock %}
 {% block content %}
-    <div class="container-fluid">
-        <div class="row justify-content-md">
-            <div class="col-md-3 gy-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Modules</h5>
-                        <div class="card-text">
-                            <table class="table">
-                                <form id="moduleForm" method="POST" action="{% url 'configdashboard:add_module' %}">
-                                    {% csrf_token %}
-                                    <tr>
-                                        <td>
-                                            {{moduleForm.modules}}
-                                        </td>
-                                        <td>
-                                            <button type="submit" class="btn btn-primary"> Add Module</button>
-                                        </td>
-                                    </tr>            
-                                </form>
-                            </table>
-                            
-                            <table class="table table-bordered">
-                                <thead>
-                                        <th>Name</th>
-                                        <th>Actions</th>
-                                </thead>
-                                <tbody>
-                                    {% for module in config.modules %}
-                                    <tr>
-                                        <td>{{module}}</td>
-                                        <td>
-                                            <form name method="POST" action="{% url 'configdashboard:remove_module' module  %}">
-                                                {% csrf_token %}
-                                                <input type="submit" value="Remove" class="btn btn-danger"/>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-
-                            </table>
-                        </div>
-                    </div>
+    <script>
+        function show_hide_row_config()
+        {
+            console.log("hi",$("#menu-arrows-left-config").css("display"));
+            console.log("hi2",$("#menu-arrows-right-config").css("display"));
+            $("#menu-arrows-left-config").toggle();
+            $("#menu-arrows-right-config").toggle();
+            $("#downloadJSON").toggle()
+        }
+        function toggle_client_config()
+        {
+            console.log("hi",$("#arrows-left-client-config").css("display"));
+            console.log("hi2",$("#arrows-right-client-config").css("display"));
+            $("#arrows-left-client-config").toggle();
+            $("#arrows-right-client-config").toggle();
+            $("#client-config").toggle()
+        }
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <div class="row mb-3">
+    <div class="col-md-11" style="justify-content:center;margin:auto">
+    <form class="form-control mt-4" id='report_form'>
+        {% csrf_token %}
+    
+        <div class="row mt-4 mb-3">
+            <div class="col-md-12">
+        <div id='indicator' class='text-center' style="color:white;font-size:15px">
+            {% if submitted and saved %}
+             <div class="row" style="background-color:green">
+                <h4 style="color:white;margin-top:6px">Configuration has been submitted and saved.</h4>
+            {% elif submitted and not saved %}
+                <h4 style="color:white;margin-top:6px">Configuration has been submitted but not saved</h4>
                 </div>
+            {% elif msg != 'safe' %}
+                 <div class="row" style="background-color:#FF0000">
+                    <div class="container">
+                <p style="color:white;font-size:15px;margin-top:6px">{{ msg }}</p>
             </div>
-            <div class="col-md-3 gy-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Network Options</h5>
-                        <div class="card-text">
-                            <table class="table">
-                                <form id="networkForm" method="POST" action="{% url 'configdashboard:add_network' %}">
-                                    {% csrf_token %}
-                                    <tr>
-                                        <td>
-                                            {{networkForm.networks}}
-                                        </td>
-                                        <td>
-                                            <button type="submit" class="btn btn-primary"> Add Network</button>
-                                        </td>
-                                    </tr>            
-                                </form>
-                            </table>
-                            <table class="table table-bordered">
-                                <thead>
-                                        <th>Display Name</th>
-                                        <th>Name</th>
-                                        <th>Actions</th>
-                                </thead>
-                                <tbody>
-                                    {% for net,net_disp in config.settings.networks|zip:config.settings.networks_display%}
-                                    <tr>
-                                        <td>{{net_disp}}</td>
-                                        <td>{{net}}</td>
-                                        <td>
-                                            <form name method="POST" action="{% url 'configdashboard:remove_network' net  %}">
-                                                {% csrf_token %}
-                                                <input type="submit" value="Remove" class="btn btn-danger"/>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                 </div>
+            {% endif %}
+        </div>
                 </div>
-            </div>
-            <div class="col-md-3 gy-3">
+        </div>
+    <br>
+    <div class="row">
+        <div class="col-md-11 mb-2" style="align-items: right;padding: 0px; margin: auto;">
+        <div class="btn btn-sm btn-gray-800  align-items-center mb-2" style="font-size: 13px; float: right;justify-content:center;color:white">
+            <!-- Removed helpconfig anchor tag -->
+                <i class="fas fa-info-circle"></i>&nbsp;Help
+        </div>
+        </div>
+        </div>
+        <div class="row">
+            <div class="col-md-10" style="margin:auto">
                 <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Gender</h5>
-                        <div class="card-text">
-                            <table class="table">
-                                <tbody>
-                                    <form method="POST" action="{% url 'configdashboard:add_gender' %}">
-                                        {% csrf_token %}
-                                        <tr>
-                                            <td>
-                                                {{genderForm.gender}}
-                                            </td>
-                                            <td>
-                                                <input type="submit" value="Add" class="btn btn-success"> 
-                                            </td>
-                                        </tr>
-                                    </form>
-                                </tbody>
-                            </table>
-                            <table class="table table-bordered">
-                                {% for g in config.settings.gender_keys %}
-                                <tr>
-                                    <td>
-                                        {{g}}
-                                    </td>
-                                    <td>
-                                        <form name method="POST" action="{% url 'configdashboard:remove_gender' g  %}">
-                                            {% csrf_token %}
-                                            <input type="submit" value="Remove" class="btn btn-danger"/>
-                                        </form>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </table>
+                    <div class="row" style="justify-content:center">
+                        <div class="col-md-5 mt-4">
+                            <div class="card-body">
+                                <div>
+                                    <label >Hierarchy Level</label>
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" id="hl_asc" {{ asc }} value="ASC" name="hl_order" class="custom-control-input">
+                                        <label class="custom-control-label" for="hl_asc">Ascending</label>
+                                    </div>
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" id="hl_dsc" {{ dsc }} value="DSC" name="hl_order" class="custom-control-input">
+                                        <label class="custom-control-label" for="hl_dsc">Descending</label>
+                                    </div>
+                                    <label style="margin-top:5px;">Leader Level</label>
+                                    <input class="form-control inputBox" type="text" name="leader_level" value='{{ hl_count }}' required>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 gy-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Who Modules</h5>
-                        <div class="card-text">
-                            <ul class="list-group">
-                                {% for who in config.settings.who_modules %}
-                                <li class="list-group-item">{{ who.display_name }}
-                                    <input type="checkbox" type="checkbox" id="{{who.name}}" 
-                                    {% if who.enabled == 1 %} checked {% endif %}
-                                    onchange="toggle_module('who','{{who.name}}')">
-                                    <i class="fa fa-spinner" style="display:none" aria-hidden="true" id="{{who.name}}-process"></i>
-                                    <i class="fa fa-exclamation-circle" style="display:none" aria-hidden="true" id="{{who.name}}-error"></i>
-                                </li>
-                                {% endfor %}
-                            </ul>
+                        <div class="col-md-5 mt-4">
+                            <div class="card-body">
+                                <label for="id_tenure_date">Tenure Calculation Date<span style="color:red">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <svg class="icon icon-xs text-gray-600" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd">
+                                            </path>
+                                        </svg>
+                                    </span>
+                                    <input type="date" id="tenure_date" name="tenure_date" value='{{ tenure_date }}' class="form-control" required>
+                                </div>
+                                <div class="mt-2">
+                                    <label style="margin-top:5px;">Tenure Text</label>
+                                    <input class="form-control inputBox" type="text" name="tenure_text" value="{{ tenure_text }}" required>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="row mt-3">
+            <div class="col-md-10" style="margin:auto">
+    
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row" style="justify-content:center">
+                                <div class="col-md-9 mt-2">
+                                    <label>Organisation Full Name</label>
+                                    <input class="form-control inputBox" type="text" name="org_name" value='{{ org_name }}' required>
+                                </div>
+                                <div class="col-md-9 mt-2">
+                                    <label>Display Name</label>
+                                    <input class="form-control inputBox" type="text" name="display_name" value='{{ display_name }}' required>
+                                </div>
+                                {% if team_ONA %}
+                                <div class="col-md-9 mt-2">
+                                    <label>Team Name</label>
+                                    <input class="form-control inputBox" type="text" name="team_name" value='{{ team_name }}' required>
+                                </div>
+                                {% endif %}
+                                <div class="col-md-9 mt-2">
+                                    <input type="checkbox" id="extended_gender" name="extended_gender" value='Use_ext_gen' {{ ext_gen }}>&nbsp;&nbsp;
+                                    <label for="extended_gender">Use Extended Gender?</label><br>
+                                </div>
+                            </div>
+                        </div>
+                     </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-5" style="margin-left:auto">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title">Modules</h6>
+                        <div class="card-text">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <select class="form-select" name="moduleselect" id="moduleselect">
+                                        <option value="none">Select a Module</option>
+                                        <option value="hubs">hubs</option>
+                                        <option value="gate_keepers">gate_keepers</option>
+                                        <option value="power_players">power_players</option>
+                                        <option value="influencers">influencers</option>
+                                        <option value="collab_overload">collab_overload</option>
+                                        <option value="discon_emp">discon_emp</option>
+                                        <option value="silos">silos</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" onclick="add_module()" id='addModule' class="btn btn-primary">Add</button>
+                                </div>
+                            </div>
+                            <table id="moduleTable" class="table">
+                                {% for module in modules %}
+                                    <tr id="{{module}}">
+                                        <td>
+                                            <span>{{module}}</span>
+                                        </td>
+                                        <td>
+                                            <button type="button" onclick="remove_module('{{module}}')" class="btn btn-danger btn-sm">Remove</button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+            <div class="col-md-5" style="margin-right:auto">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">Who Modules</h6>
+                            <div class="card-text">
+                                <ul class="list-group" id="whomodulelist">
+                                    {% for who in who_modules %}
+                                    <li class="list-group-item">{{ who.display_name }}
+                                        <input type="checkbox" type="checkbox" id="{{who.name}}" 
+                                        {% if who.enabled == 1 %} checked {% endif %}>
+                                        <!-- <i class="fa fa-spinner" style="display:none" aria-hidden="true" id="{{who.name}}-process"></i>
+                                        <i class="fa fa-exclamation-circle" style="display:none" aria-hidden="true" id="{{who.name}}-error"></i> -->
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                     </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-5" style="margin-left:auto">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">Gender</h6>
+                            <div class="card-text">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <input type="text" class="form-control" id="genderInput">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" onclick="add_gender()" id='addModule' class="btn btn-primary">Add</button>
+                                    </div>
+                                </div>
+                                <table id="genderTable" class="table">
+                                    {% for gend in genders %}
+                                        <tr id="{{gend}}">
+                                            <td>
+                                                <span>{{gend}}</span>
+                                            </td>
+                                            <td>
+                                                <button type="button" onclick="remove_gender('{{gend}}')" class="btn btn-danger btn-sm">Remove</button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-5" style="margin-right:auto">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">Networks</h6>
+                            <div class="card-text">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <select class="form-select" name="networkselect" id="networkselect">
+                                            <option value="none">Select a network</option>
+                                            <option value="combined">Combined</option>
+                                            <option value="work">Work</option>
+                                            <option value="trust">Trust</option>
+                                            <option value="energy">Energy</option>
+                                            <option value="decision-making">Decision Making</option>
+                                            <option value="expertise">Expertise</option>
+                                            <option value="awareness">Awareness</option>
+                                            <option value="innovation">Innovation</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" onclick="add_network()" id='addModule' class="btn btn-primary">Add</button>
+                                    </div>
+                                </div>
+                                <table id="networkTable" class="table">
+                                    {% for net,net_disp in networks %}
+                                        <tr id="{{net}}">
+                                            <td>
+                                                <span>{{net_disp}}</span>
+                                            </td>
+                                            <td>
+                                                <button type="button" onclick="remove_network('{{net}}')" class="btn btn-danger btn-sm">Remove</button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Removed report_jsonpart2 div tag -->
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+    
+                </div>
+            </div>
+        </div>
+        <div class="row"  style="text-align:right;">
+            <div class="col-md-10 mt-3 mb-2" style="margin: auto;" >
+                <button class="btn btn-gray-800" style="font-size:15px;" type="submit">
+                    Submit
+                </button>
+            </div>
+        </div>
+    </form>
+    
     </div>
-    <script type="text/javascript">
-        function toggle_module(moduleType,moduleName){
-            var pre_val = !$("#" + moduleName).is(':checked')
-            $("#" + moduleName).prop('checked',pre_val)
-            $("#" + moduleName).attr('disabled',true)
-            $("#" + moduleName +"-process").css({'display':'inline'})
-            $("#" + moduleName + "-error").css({'display':'none'})
-            $.ajax({
-                url:"/configdashboard/toggle_module/" + moduleType + "/" + moduleName,
-                success:function(data,status){
-                    if(data['status'] != -1){
-                        $("#" + moduleName).prop('checked', data.value == 1 ? true:false)
-                        $("#" + moduleName).removeAttr('disabled')
-                        $("#" + moduleName +"-process").css({'display':'none'})
-                    }else{
-                        onToggleError()
-                    }
-                    
-                },
-                error:function(error){
-                    onToggleError()
-                }
-            })
+    </div>
+    
+    <div class="row mb-3" >
+        <div class="col-md-11"style="margin:auto;" >
+            <div class="row" style="margin: auto;">
+            <div class="card">
+                <button type="button" class="collapsible" onclick="toggle_client_config()">
+                    <p style="font-size: 18px; font-weight:600 ; margin: 0px;">
+                        <span class="detail">
+                        <i class="fa-solid fa-gear" style="font-size: 17px;"></i>
+                        &nbsp;&nbsp;Client Configuration
+                        <span>
+                            <i style="font-size: 13px;" class="far fa-question-circle"></i>&nbsp;
+                            <span class="tooltiptext">
+                                Here you can change permission action for client. please don't select checkbox if you want to disallow that for client.
+                            </span>
+                        </span>
+    </span>
+                        <span id="arrows-left-client-config" class='fas fa-chevron-circle-down' aria-hidden="true" style="float:right; margin-top:5px;"  ></span>
+                        <span id="arrows-right-client-config" class='fas fa-chevron-circle-up' style="display: none; float:right; margin-top:5px;" aria-hidden="true "></span>
+                    </p>
+                </button>
+                <div class="row mt-1 mb-1" id="client-config" style="display:none">
+                    <div class="row">
+                    <div class="col-md-10" style="margin: auto;">
+                        <div class="card" >
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <p><b style="color: #483D97;">Please select the permissible actions for Client:</b></p>
+                                    </div>                                
+                                    <div class="col-md-12" id="client-permissions" style="display:flex;flex-wrap: wrap;">
+                                        
+                                    </div>
+                                </div>
+                                <div class="row mt-4" style="display:flex; justify-content:right;">
+                                    <div class="spinner-border" id="cp-spinner">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                    <div id="updateOtherCP" class="btn btn-sm btn-gray-800  align-items-center mb-3" style="display:flex;font-size: 20px; float: left; margin-left: 10px;height:35px;font-size:13px;justify-content:center;width:20rem;color: white; ">
+                                        {% comment %}
+                                        <a title="Update Other Permissions" href="{% url 'update_study' study_id %}">
+                                        <span style="color: white">Update Other Permissions</span>
+                                        </a>
+                                        {% endcomment %}
+                                    </div>
+                                    <div id="updateCP" class="btn btn-sm btn-gray-800  align-items-center mb-3" style="display:flex; justify-content: flex-end; align-self:end;font-size: 20px; float: right; margin-right: 10px;height:35px;font-size:13px;justify-content:center;width:9rem;color: white; ">
+                                        <a title="Update">
+                                        <span>Update</span>
+                                        </a>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-10" style="margin: auto;">
+                        <div id="refreshCP" class="btn btn-sm btn-gray-800  align-items-center mb-3" style="display:flex; justify-content: flex-end; align-self:end;font-size: 20px; float: right; margin-right: 10px;height:35px;font-size:13px;justify-content:center;width:4rem;color: white; ">
+                            <a title="Refresh">
+                            <i class="fa-solid fa-rotate-right"></i>
+                            </a>
+                        </div>
+                        </div>
+                        </div>
+                        </div>
+            </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-3" >
+        <div class="col-md-11"style="margin:auto;" >
+            <div class="row" style="margin: auto;">
+            <div class="card">
+                <button type="button" class="collapsible" onclick="show_hide_row_config()">
+                    <p style="font-size: 18px; font-weight:600 ; margin: 0px;">
+                        <i class="fa-solid fa-gear" style="font-size: 15px;"></i>
+                        &nbsp;&nbsp;Advanced
+                        <span id="menu-arrows-left-config" class='fas fa-chevron-circle-down' aria-hidden="true" style="float:right; margin-top:5px;"  ></span>
+                        <span id="menu-arrows-right-config" class='fas fa-chevron-circle-up' style="display: none; float:right; margin-top:5px;" aria-hidden="true "></span>
+                    </p>
+                </button>
+                <div class="row mt-1 mb-4" id="downloadJSON" style="display:none">
+                    <div class="col-md-10" style="margin: auto;">
+                        <div class="card" >
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mt-1 mb-1" style="justify-content: center; display:flex;">
+                                        {% comment %}
+                                        <a href="{% url 'download_config_json' study_id 'study' %}" target="_blank"
+                                            class="btn btn-sm btn-gray-800 d-inline-flex align-items-center"
+                                            style="height:37px;font-size:13px;width:18rem;justify-content:center">
+                                            &nbsp;<i class="fas fa-file-download"></i>&nbsp;&nbsp;Download Study Config JSON
+                                        </a>
+                                        {% endcomment %}
+                                    </div>
+                                    <div class="col-md-6 mt-1 mb-1" style="justify-content: center; display:flex;">
+                                        {% comment %}
+                                        <a href="{% url 'download_config_json' study_id 'report' %}" target="_blank"
+                                            class="btn btn-sm btn-gray-800 d-inline-flex align-items-center"
+                                            style="height:37px;font-size:13px;width:18rem;justify-content:center">
+                                            &nbsp;<i class="fas fa-file-download"></i>&nbsp;&nbsp;Download Report Config JSON
+                                        </a>
+                                        {% endcomment %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        $('#report_form').submit(function(e){
+            console.log('Submit clicked');
+            e.preventDefault();
+            indicator_html = '<div class="text-center"> \
+                <div class="spinner-border" > \
+                    <span class="sr-only">Loading...</span> \
+                </div> \
+                </div>'
+            $('#indicator').html(indicator_html)
+            htmlText='';
+            var formData = new FormData(this);
+            // var table = document.getElementById('fieldsTable');
+            // var firstCells = table.querySelectorAll('td:nth-child(1)');
+            // var secondCells = table.querySelectorAll('td:nth-child(2)');
+            // var thirdCells = table.querySelectorAll('td:nth-child(3)');
+            var firstcellValues = [];
+            var entityvalues = [];
+            // myObj = JSON.parse(("{{myObj |escapejs}}"));
+            // firstCells.forEach(function(singleCell) {
+            // firstcellValues.push(singleCell.innerText);
+            // entity_value = singleCell.getAttribute("value");
+            // entityvalues.push(entity_value);
+            // console.log("singlecell",singleCell)
+    
+            // });
+    
+            console.log("entityvalues",entityvalues)
+    
+            console.log("firstcellvalues",firstcellValues);
+    
+            var secondcellValues = [];
+            // secondCells.forEach(function(singleCell) {
+            // secondcellValues.push(singleCell.innerText);
+            // });
+            // console.log(secondcellValues);
+            var thirdcellValues = [];
+            // thirdCells.forEach(function(singleCell) {
+            // thirdcellValues.push(singleCell.innerText);
+            // });
+            console.log(thirdcellValues);
+            formData.append('submitted', 'submitted');
+            formData.append('entityvalues', entityvalues);
+            formData.append('fields', firstcellValues);
+            formData.append('display_name_table', secondcellValues);
+            formData.append('short_display_name', thirdcellValues);
             
-            function onToggleError(){
-                $("#" + moduleName).removeAttr('disabled')
-                $("#" + moduleName).prop('checked', pre_val)
-                $("#" + moduleName + "-process").css({'display':'none'})
-                $("#" + moduleName + "-error").css({'display':'inline'})
-            }
+            //pranjal
+            data = prepare_data()
+            formData.append('genders',data['genders'])
+            formData.append('modules',data['modules'])
+            formData.append('networks',data['networks'])
+            formData.append('networks_display',data['networks_display'])
+            formData.append('who_modules',data['who_modules'])
+
+            $.ajax(
+                {
+                    
+                    {% comment %}
+                    url: "{% url 'report_jsonpart1' study_id %}",
+                    {% endcomment %}
+                    type: 'POST',
+                    data: formData,            
+                    processData: false,
+                    contentType: false,
+                    success: function( result ) {
+                        console.log('Loading document');
+                        // console.log(result);
+                        // console.log('Ext gen:', ext_gen);
+                        $('#report_config').html(result);
+                        $.ajax({
+                            {% comment %}
+                            url: "{% url 'report_jsonpart2' study_id %}",
+                            {% endcomment %}
+                            type: 'POST',
+                            data: formData,            
+                            processData: false,
+                            contentType: false,
+                            success: function( result ) {
+                                console.log('Loading document');
+                                // console.log(result);
+                                // console.log('Ext gen:', ext_gen);
+                                $('#part2form').html(result);
+                            }
+                        });
+                    }            
+                });
+                location.reload();
+            })
+    </script>
+    <script>
+        var clientPermissions = {};
+        function getClientPermissions(){
+            $('#refreshCP').hide();
+            $('#updateCP').hide();
+            $('#updateOtherCP').hide();
+            $('#cp-spinner').show();
+            $.get(url="cp", success= (response) => {
+                // console.log('Recieved response:', response);
+                if(response.success){
+                    clientPermissions = response.data;
+                    console.log('Client Permissions:', clientPermissions);
+                    var checkBoxHtml = ''
+                    for (const [key, value] of Object.entries(clientPermissions)){
+                        // var display = key.replace('_', ' '); //.toUpperCase();
+                        console.log('key:', key, 'val:', value);
+                        if (value === true | value === false){ // this is just a temporary fix for client_permission section. Need a permanent work here...
+                            console.log('Valid key:', key);
+                        
+                            var displayParts = key.split('_');
+                            let display = '';
+                            displayParts.forEach((part) => {
+                                display += part.charAt(0).toUpperCase() + part.slice(1) + ' ';
+                            });
+                            checkBoxHtml += `<div><input class="cpClass" type="checkbox" id="${key}" ${(value === true) ? "checked" : ""} />
+                                &nbsp;&nbsp;&nbsp;<label for="${key}">${display}</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>`;
+                        }
+                    }
+                    $('#client-permissions').html(checkBoxHtml);
+                }
+                $('#cp-spinner').hide();
+                $('#refreshCP').show();
+                $('#updateCP').show();
+                $('#updateOtherCP').show();
+                
+            }, 'json');
         }
+        function updateClientPermissions(){
+            $('#refreshCP').hide();
+            $('#updateCP').hide();
+            $('#updateOtherCP').hide();
+            $('#cp-spinner').show();
+            console.log('Update button pressed');
+            var sendData = {csrfmiddlewaretoken: '{{ csrf_token }}'};
+            document.querySelectorAll('.cpClass').forEach(function(ip){
+                console.log(ip.id);
+                var isChecked = $('#'+ip.id).prop('checked');
+                console.log($('#'+ip.id).prop('checked'));
+                sendData[ip.id] = isChecked;
+            });
+            console.log('Send Data:', sendData);
+            // $.post(url='', data=)
+            {% comment %}
+            $.post(url="{% url 'client_permissions' study_id %}", data=sendData, success= (response) => {
+                console.log('Recieved response:', response);
+                if(response.success){
+                    console.log('Updated');                
+                }
+                else console.log('Failed');
+                $('#cp-spinner').hide();
+                $('#refreshCP').show();
+                $('#updateCP').show();
+                $('#updateOtherCP').show();
+            }, 'json');
+            {% endcomment %}
+        }
+        $(document).ready(function () {
+            console.log('Document loaded...');
+            var ext_gen = '{{ ext_gen | safe }}';
+            console.log('Ext Gen', ext_gen);
+            getClientPermissions();
+            $('#refreshCP').on('click', getClientPermissions);
+            $('#updateCP').on('click', updateClientPermissions);
+
+            // Pranjal
+            update_module_list() 
+            update_network_list() 
+        })
+        
+    </script>
+    <script>
+        function update_module_list(){
+            var selectedModules = []
+            $('#moduleTable tr').each(function() {
+                selectedModules.push($(this).find("td:first").text().trim());    
+            });
+
+            var originalModules = []
+            $("#moduleselect option").each(function()
+            {
+                originalModules.push($(this).val())
+                if(selectedModules.includes($(this).val()) && $(this).val() !="none"){
+                    $(this).hide()
+                }else{
+                    $(this).show()
+                }
+            });
+            $('#moduleselect').prop('selectedIndex',0)
+        }
+        function update_network_list(){
+            var selectedNetworks = []
+            $('#networkTable tr').each(function() {
+                selectedNetworks.push($(this).attr('id'));    
+            });
+
+            var originalNetworks = []
+            $("#networkselect option").each(function()
+            {
+                originalNetworks.push($(this).val())
+                if(selectedNetworks.includes($(this).val()) && $(this).val() !="none"){
+                    $(this).hide()
+                }else{
+                    $(this).show()
+                }
+            });
+            $('#networkselect').prop('selectedIndex',0)
+        }
+        function add_module(){
+            var module = $('#moduleselect').find(":selected").val();
+            if(module == "none")
+                return
+            $('#moduleTable').append(`<tr id="${module}">
+                                        <td>
+                                            <span>${module}</span>
+                                        </td>
+                                        <td>
+                                            <button type="button" onclick="remove_module('${module}')"
+                                            class="btn btn-danger btn-sm">Remove</button>
+                                        <td>
+                                  </tr>`);
+            update_module_list()
+        }
+        function remove_module(module){
+            $("#moduleTable").find("#" + module).remove();
+            update_module_list()
+        }
+
+        function add_gender(){
+            var gender =  $('#genderInput').val();
+            $('#genderInput').val('');
+            var genders = []
+            $('#genderTable tr').each(function() {
+                genders.push($(this).find("td:first").text().trim().toLowerCase());    
+            });
+
+            if(!genders.includes(gender.toLowerCase())){
+                $('#genderTable').append(`<tr id="${gender}">
+                                        <td>
+                                            <span>${gender}</span>
+                                        </td>
+                                        <td>
+                                            <button type="button" onclick="remove_gender('${gender}')"
+                                            class="btn btn-danger btn-sm">Remove</button>
+                                        <td>
+                                  </tr>`);
+            }
+
+        }
+        function remove_gender(gender){
+            $("#genderTable").find("#" + gender).remove();
+        }
+        function add_network(){
+            var network = $('#networkselect').find(":selected").val();
+            var network_disp = $('#networkselect').find(":selected").html().trim()
+            if(network == "none")
+                return;
+            
+            $('#networkTable').append(`<tr id="${network}">
+                                    <td>
+                                        <span>${network_disp}</span>
+                                    </td>
+                                    <td>
+                                        <button type="button" onclick="remove_network('${network}')"
+                                        class="btn btn-danger btn-sm">Remove</button>
+                                    <td>
+                                </tr>`);
+            update_network_list();
+            
+        }
+        function remove_network(network){
+            $("#networkTable").find("#" + network).remove();
+            update_network_list();
+        }
+        //call this function to prepare data into json 
+        // All are list except of who modules which is list of dictionary 
+        // with name as key and 1/0 as enabled/disabled
+        function prepare_data(){
+            
+            //gender
+            var genders = []
+            $('#genderTable tr').each(function() {
+                genders.push($(this).find("td:first").text().trim());    
+            });
+
+            //modules
+            var selectedModules = []
+            $('#moduleTable tr').each(function() {
+                selectedModules.push($(this).find("td:first").text().trim());    
+            });
+
+            //network
+            var networks = []
+            var networks_display = []
+            $('#networkTable tr').each(function() {
+                networks.push($(this).attr('id'));
+                networks_display.push($(this).find("td:first").text().trim())
+            });
+
+            //who_modules
+            var who_modules = []
+            $('#whomodulelist li').each(function() {
+                var name = $(this).find('input[type=checkbox]').attr('id');
+                var status = $(this).find('input[type=checkbox]').is(':checked') ? 1 : 0;
+                who_modules.push([name,status])
+            });
+            
+            data = {
+                'genders':genders,
+                'modules':selectedModules,
+                'networks':networks,
+                'networks_display':networks_display,
+                'who_modules':who_modules
+            }
+            return data
+        }
+
     </script>
 {% endblock %}
